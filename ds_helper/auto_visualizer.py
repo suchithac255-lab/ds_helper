@@ -36,10 +36,4 @@ def visualize(df):
                 plt.axis("off")
                 plt.title(f'WordCloud of {col}')
                 plt.show()
-if __name__ == "__main__":
-    df = pd.DataFrame({
-        "Age": [22, 25, 30, 28, 40, 35, 22],
-        "Gender": ["Male", "Female", "Female", "Male", "Male", "Female", "Male"],
-        "Comments": ["Good", "Excellent service", "Bad experience", "Okay", "Loved it", "Could be better", "Nice"]
-    })
-    visualize(df)
+
