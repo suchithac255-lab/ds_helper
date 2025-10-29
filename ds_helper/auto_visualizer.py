@@ -26,6 +26,4 @@ def visualize(df):
                 plt.title(f'Histogram: {column}')
         plt.tight_layout()
         plt.show()
-
-df = pd.DataFrame(data)
 visualize(df)
