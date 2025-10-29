@@ -1,39 +1,31 @@
-import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from wordcloud import WordCloud
+import pandas as pd
 
 def visualize(df):
-    for col in df.columns:
-        print(f"\nVisualizing column: {col}")
-        if pd.api.types.is_numeric_dtype(df[col]):
-            plt.figure(figsize=(12, 4))
-            plt.subplot(1, 3, 1)
-            sns.histplot(df[col].dropna(), kde=True)
-            plt.title(f'Histogram of {col}')
-            plt.subplot(1, 3, 2)
-            sns.boxplot(x=df[col].dropna())
-            plt.title(f'Boxplot of {col}')
-            plt.subplot(1, 3, 3)
-            if df.shape[0] <= 2000:
-                sns.scatterplot(x=range(len(df[col])), y=df[col])
-                plt.title(f'Scatter of {col}')
-            plt.tight_layout()
-            plt.show()
-        elif pd.api.types.is_categorical_dtype(df[col]) or df[col].dtype == object:
-            if df[col].nunique() < 20:
-                plt.figure(figsize=(6, 4))
-                sns.countplot(x=df[col])
-                plt.title(f'Countplot of {col}')
-                plt.xticks(rotation=45)
-                plt.show()
-        if df[col].dtype == object and df[col].str.len().mean() > 20:
-            text_data = " ".join(df[col].dropna().astype(str))
-            if text_data.strip():
-                wordcloud = WordCloud(width=800, height=400, background_color="white").generate(text_data)
-                plt.figure(figsize=(8, 4))
-                plt.imshow(wordcloud, interpolation="bilinear")
-                plt.axis("off")
-                plt.title(f'WordCloud of {col}')
-                plt.show()
+    for column in df.columns:
+        data = df[column]
+        plt.figure(figsize=(8, 4))
+        if data.dtype == 'object':
+            if data.apply(lambda x: isinstance(x, str)).mean() > 0.8 and data.str.split().apply(len).mean() > 1:
+                text = ' '.join(data.dropna().astype(str))
+                wordcloud = WordCloud(background_color='white').generate(text)
+                plt.imshow(wordcloud, interpolation='bilinear')
+                plt.axis('off')
+                plt.title(f'Word Cloud: {column}')
+            else:
+                sns.countplot(y=column, data=df, order=data.value_counts().index)
+                plt.title(f'Count Plot: {column}')
+        elif data.dtype in ['int64', 'float64']:
+            if data.nunique() < 10:
+                sns.boxplot(x=column, data=df)
+                plt.title(f'Box Plot: {column}')
+            else:
+                sns.histplot(data, kde=True)
+                plt.title(f'Histogram: {column}')
+        plt.tight_layout()
+        plt.show()
 
+df = pd.DataFrame(data)
+visualize(df)
